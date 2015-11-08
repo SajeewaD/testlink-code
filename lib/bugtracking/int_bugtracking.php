@@ -40,7 +40,7 @@ require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 // If user configures an interface not declared here, pages trying to use bts
 // will give error message
 $btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS','POLARION',
-		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ','YOUTRACK');
+		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ','YOUTRACK', 'JIRAREST');
 
 $bts = array_flip($btslist);
 
