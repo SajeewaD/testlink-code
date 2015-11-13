@@ -43,6 +43,12 @@
 //     define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
 // }
 
+
+// Enable Jira Integration (using the REST API)
+// Make sure cfg/jirarest.cfg.php has been configured correctly
+// $g_interface_bugs = 'JIRAREST';
+
+
 // *******************************************************************************
 // If you want you have a different login template
 // key: original TL template name WITHOUT extension
