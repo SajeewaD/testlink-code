@@ -15,7 +15,7 @@ require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/Jira.php");
 
 class jirarestInterface extends bugtrackingInterface
 {
-	// Not used
+    // Not used
     var $dbHost = null;
     var $dbConnection = null;
     var $dbCharSet = null;
@@ -61,7 +61,7 @@ class jirarestInterface extends bugtrackingInterface
                          'host'     => (string)trim($this->JiraHost));
             
             tLog("Creating Client", 'ERROR');
-      	    $this->JiraClient = new JiraApi\Jira($par);
+            $this->JiraClient = new JiraApi\Jira($par);
 
             tLog("Setting connected status", 'ERROR');
 
@@ -81,28 +81,28 @@ class jirarestInterface extends bugtrackingInterface
     // End - Helpfer functions
 
     // Functions called by TestLink
-	
-	/**
-	  * Determine if we are connected to a Jira instance
-	  *
-	  * @return true if connected false otherwise
-	  *
-	  **/
+    
+    /**
+      * Determine if we are connected to a Jira instance
+      *
+      * @return true if connected false otherwise
+      *
+      **/
     function isConnected()
     {
         return $this->JiraConnected;
     }
-	  
+      
     /**
-	  * Fetch the bug summary from Jira for the given issue
-	  *
-	  * @param int id the issue key
-	  *
-	  * @return string returns the bug summary (if bug is found), or false
-	  *
-	  **/
-	function getBugSummaryString($id)
-	{
+      * Fetch the bug summary from Jira for the given issue
+      *
+      * @param int id the issue key
+      *
+      * @return string returns the bug summary (if bug is found), or false
+      *
+      **/
+    function getBugSummaryString($id)
+    {
         tLog("Called getBugSummaryString", 'ERROR');
         if ( !$this->JiraConnected )
         {
@@ -122,38 +122,38 @@ class jirarestInterface extends bugtrackingInterface
         {
             return false;
         }
-	}
+    }
 
-	/**
-	 * Returns the URL which should be displayed for entering bugs
-	 *
-	 * @return string returns a complete URL
-	 *
-	 **/
-	function getEnterBugURL()
-	{
-		return $this->enterBugURL;
-	}
+    /**
+     * Returns the URL which should be displayed for entering bugs
+     *
+     * @return string returns a complete URL
+     *
+     **/
+    function getEnterBugURL()
+    {
+        return $this->enterBugURL;
+    }
 
-	/**
-	 * checks a bug id for validity, that means numeric only
-	 *
-	 * @return bool returns true if the bugid has the right format, false else
-	 **/
-	function checkBugID($id)
-	{
+    /**
+     * checks a bug id for validity, that means numeric only
+     *
+     * @return bool returns true if the bugid has the right format, false else
+     **/
+    function checkBugID($id)
+    {
         //No error checking for now
         return true;
-	}
+    }
 
-	/**
-	 * return the maximum length in chars of a bug id
-	 * @return int the maximum length of a bugID
-	 */
-	function getBugIDMaxLength()
-	{
-		return 16; // Arbitary
-	}
+    /**
+     * return the maximum length in chars of a bug id
+     * @return int the maximum length of a bugID
+     */
+    function getBugIDMaxLength()
+    {
+        return 16; // Arbitary
+    }
     
     /**
      * Return the URL to the bugtracking page for viewing
@@ -175,7 +175,7 @@ class jirarestInterface extends bugtrackingInterface
      * @param int id the bug id
      *
      * @return string returns the status (in a readable form) of the given bug if the bug
-     * 		was found, else false
+     *         was found, else false
      *
      **/
     function getBugStatusString($id)
@@ -203,7 +203,7 @@ class jirarestInterface extends bugtrackingInterface
         //if the bug wasn't found the status is null else we simply display the bugID with status
         if (!is_null($JiraKey))
         {
-			if (strcasecmp($JiraStatus, 'closed') == 0 || strcasecmp($JiraStatus, 'resolved') == 0 )
+            if (strcasecmp($JiraStatus, 'closed') == 0 || strcasecmp($JiraStatus, 'resolved') == 0 )
             {
                 $JiraStatus = "<del>" . $JiraStatus . "</del>";
             }
@@ -217,54 +217,57 @@ class jirarestInterface extends bugtrackingInterface
 
     }
 
-	/**
-	 * default implementation for generating a link to the bugtracking page for viewing
-	 * the bug with the given id in a new page
-	 *
-	 * @param int id the bug id
-	 *
-	 * @return string returns a complete URL to view the bug (if found in db)
-	 *
-	 **/
-	function buildViewBugLink($bugID,$bWithSummary = false)
-	{
-		$link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
-		$status = $this->getBugStatusString($bugID);
+    /**
+     * default implementation for generating a link to the bugtracking page for viewing
+     * the bug with the given id in a new page
+     *
+     * @param int id the bug id
+     *
+     * @return string returns a complete URL to view the bug (if found in db)
+     *
+     **/
+    function buildViewBugLink($bugID,$bWithSummary = false)
+    {
+        $link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
+        $status = $this->getBugStatusString($bugID);
 
-		if (!is_null($status))
+        if (!is_null($status))
+        {
+            $link .= $status;
+        }
+        else
 		{
-			$link .= $status;
+            $link .= $bugID;
 		}
-		else
-			$link .= $bugID;
-		if ($bWithSummary)
-		{
-			$summary = $this->getBugSummaryString($bugID);
+		
+        if ($bWithSummary)
+        {
+            $summary = $this->getBugSummaryString($bugID);
 
-			if (!is_null($summary))
-			{
-				$summary = iconv($this->dbCharSet,$this->tlCharSet,$summary);
-				$link .= " - " . $summary;
+            if (!is_null($summary))
+            {
+                $summary = iconv($this->dbCharSet,$this->tlCharSet,$summary);
+                $link .= " - " . $summary;
 
-			}
-		}
+            }
+        }
 
-		$link .= "</a>";
+        $link .= "</a>";
 
-		return $link;
-	}
+        return $link;
+    }
 
-	/**
-	* checks if bug id is present in Jira
-	* Function has to be overloaded on child classes
-	*
-	* @return bool
-	**/
-	function checkBugID_existence($id)
-	{
-		//For now assume it exists
-		return true;
-	}
+    /**
+    * checks if bug id is present in Jira
+    * Function has to be overloaded on child classes
+    *
+    * @return bool
+    **/
+    function checkBugID_existence($id)
+    {
+        //For now assume it exists
+        return true;
+    }
     // End - Functions called by TestLink
 
 }
