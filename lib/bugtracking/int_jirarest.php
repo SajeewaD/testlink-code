@@ -106,7 +106,7 @@ class jirarestInterface extends bugtrackingInterface
       
         $issue = null;
 
-        $issue = $this->JiraClient->getIssue($id);
+        $issue = $this->JiraClient->getIssueStatusAndSummary($id);
       
         if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
         {
@@ -183,7 +183,7 @@ class jirarestInterface extends bugtrackingInterface
         $issue = null;
         $JiraKey = null;
 
-        $issue = $this->JiraClient->getIssue($id);
+        $issue = $this->JiraClient->getIssueStatusAndSummary($id);
       
         if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
         {
