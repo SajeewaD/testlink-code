@@ -230,10 +230,10 @@ class jirarestInterface extends bugtrackingInterface
             $link .= $status;
         }
         else
-		{
+        {
             $link .= $bugID;
-		}
-		
+        }
+        
         if ($bWithSummary)
         {
             $summary = $this->getBugSummaryString($bugID);
