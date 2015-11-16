@@ -268,6 +268,15 @@ class Jira
         return $item;
     }
 
+    public function getIssueStatusAndSummary($issueKey)
+    {
+        $this->request->openConnect($this->host . 'issue/' . $issueKey.'?fields=summary,status', 'GET');
+        $this->request->execute();
+        $item = json_decode($this->request->getResponseBody());
+
+        return $item;
+    }
+
     /**
      * From JIRA Docs
      *
