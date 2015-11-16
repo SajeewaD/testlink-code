@@ -55,18 +55,13 @@ class jirarestInterface extends bugtrackingInterface
     {
         try
         { 
-            tLog( "Attempting to connect to [".$this->JiraHost."] with [".$this->JiraUsername.":".$this->JiraPassword."]",'ERROR');
             $par = array('username' => (string)trim($this->JiraUsername),
                          'password' => (string)trim($this->JiraPassword),
                          'host'     => (string)trim($this->JiraHost));
             
-            tLog("Creating Client", 'ERROR');
             $this->JiraClient = new JiraApi\Jira($par);
 
-            tLog("Setting connected status", 'ERROR');
-
             $this->JiraConnected = $this->JiraClient->testLogin();        
-            tLog("All done", 'ERROR');
 
         }
         catch(Exception $e)
@@ -103,7 +98,6 @@ class jirarestInterface extends bugtrackingInterface
       **/
     function getBugSummaryString($id)
     {
-        tLog("Called getBugSummaryString", 'ERROR');
         if ( !$this->JiraConnected )
         {
             tLog('Cannot fetch details of issue ['.$id.'] Not connected to Jira!', 'ERROR');
