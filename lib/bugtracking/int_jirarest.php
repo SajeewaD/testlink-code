@@ -73,6 +73,64 @@ class jirarestInterface extends bugtrackingInterface
         return $this->JiraConnected;
     }
     
+    /**
+      * Returns the Jira issue for a given Jira id
+      *
+      * @return issue if connected and the issue is found, null otherwise
+      *
+      **/
+    function retrieveJiraIssueObject($id)
+    {
+        $issue = null;
+
+        $issue = $this->JiraClient->getIssueStatusAndSummary($id);
+      
+        if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
+        {
+            return $issue;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+      * Returns the Jira status for a given issue with some additional formatting
+      *
+      * @return string indicating status of issue 
+      *
+      **/
+    function buildBugStatusString($issue)
+    {
+        $JiraKey    = null;
+    $JiraStatus = null;
+        
+        if(!is_null($issue))
+        {
+            $JiraKey    = $issue->key;
+            $JiraStatus = $issue->fields->status->name;
+        }
+
+        $status_desc = null;
+
+        //if the bug wasn't found the status is null else we simply display the bugID with status
+        if (!is_null($JiraKey))
+        {
+            if (strcasecmp($JiraStatus, 'closed') == 0 || strcasecmp($JiraStatus, 'resolved') == 0 )
+            {
+                $JiraStatus = "<del>" . $JiraStatus . "</del>";
+            }
+            $status_desc = "<b>" . $JiraKey . ": </b>[" . $JiraStatus  . "] " ;
+        }
+        else
+        {
+            $status_desc = "The bug does not exist in Jira";
+        }
+        
+        return $status_desc;
+    }
+    
     // End - Helpfer functions
 
     // Functions called by TestLink
@@ -104,11 +162,9 @@ class jirarestInterface extends bugtrackingInterface
             return false;
         }
       
-        $issue = null;
-
-        $issue = $this->JiraClient->getIssueStatusAndSummary($id);
+        $issue = $this->retrieveJiraIssueObject($id);
       
-        if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
+        if(!is_null($issue))
         {
             return $issue->fields->summary;
         }
@@ -180,34 +236,16 @@ class jirarestInterface extends bugtrackingInterface
             return "<unknown>";
         }
       
-        $issue = null;
-        $JiraKey = null;
-
-        $issue = $this->JiraClient->getIssueStatusAndSummary($id);
+        $issue = $this->retrieveJiraIssueObject($id);
       
-        if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
+        if(!is_null($issue))
         {
-            $JiraKey = $issue->key;
-            $JiraStatus = $issue->fields->status->name;
-
-        }
-
-        $status_desc = null;
-
-        //if the bug wasn't found the status is null else we simply display the bugID with status
-        if (!is_null($JiraKey))
-        {
-            if (strcasecmp($JiraStatus, 'closed') == 0 || strcasecmp($JiraStatus, 'resolved') == 0 )
-            {
-                $JiraStatus = "<del>" . $JiraStatus . "</del>";
-            }
-            $status_desc = "<b>" . $id . ": </b>[" . $JiraStatus  . "] " ;
+            return buildBugStatusString($issue);
         }
         else
         {
-            $status_desc = "The BUG Id-".$id." does not exist in Jira";
+            return "The BUG Id-".$id." does not exist in Jira";
         }
-        return $status_desc;
 
     }
 
@@ -222,8 +260,11 @@ class jirarestInterface extends bugtrackingInterface
      **/
     function buildViewBugLink($bugID,$bWithSummary = false)
     {
+        $issue = $this->retrieveJiraIssueObject($bugID);
+
         $link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
-        $status = $this->getBugStatusString($bugID);
+        
+        $status = $this->buildBugStatusString($issue);
 
         if (!is_null($status))
         {
@@ -234,15 +275,13 @@ class jirarestInterface extends bugtrackingInterface
             $link .= $bugID;
         }
         
-        if ($bWithSummary)
+        if ($bWithSummary && !is_null($issue))
         {
-            $summary = $this->getBugSummaryString($bugID);
+            $summary = $issue->fields->summary;
 
             if (!is_null($summary))
             {
-                $summary = iconv($this->dbCharSet,$this->tlCharSet,$summary);
                 $link .= " - " . $summary;
-
             }
         }
 
